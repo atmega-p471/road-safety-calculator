@@ -1,4 +1,4 @@
-/* Базовые настройки шрифта и фона */
+/* Чистый современный фон и типографика */
 body {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: #f8fafc;
@@ -7,107 +7,108 @@ body {
   padding: 0;
 }
 
-/* Вкладки навигации по графикам */
+/* ВАЖНО: Запрещаем инлайн-формулам MathJax ломать строки в подписях */
+mjx-container[jax="SVG"][display="false"] {
+  display: inline-block !important;
+  margin: 0 2px !important;
+  vertical-align: middle;
+}
+
+/* Стиль вкладок */
 .tab-btn {
-  border-bottom: 3px solid transparent;
-  color: #475569;
+  border-bottom: 2px solid transparent;
+  color: #64748b;
   cursor: pointer;
   user-select: none;
 }
 
 .tab-btn:hover {
+  color: #0f172a;
   background-color: #f1f5f9;
-  color: #1e293b;
 }
 
 .tab-btn.active {
-  border-bottom: 3px solid #2563eb;
-  color: #1d4ed8;
+  border-bottom: 2px solid #2563eb;
+  color: #2563eb;
   font-weight: 600;
-  background-color: #eff6ff;
+  background-color: #ffffff;
 }
 
-/* Кнопки выбора плана мероприятий p1, p2, p3 */
+/* Переключатель планов p1, p2, p3 (Segmented control) */
 .plan-btn {
-  border-color: #cbd5e1;
-  background-color: #ffffff;
-  color: #334155;
+  color: #475569;
+  background: transparent;
+  border: none;
   cursor: pointer;
 }
 
 .plan-btn:hover {
-  background-color: #f8fafc;
+  color: #0f172a;
 }
 
 .plan-btn.active-plan {
-  border-color: #2563eb;
-  background-color: #2563eb;
-  color: #ffffff;
-  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3);
+  background-color: #ffffff;
+  color: #2563eb;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
 }
 
-/* Контейнеры фиксированной высоты для Chart.js */
+/* Контейнеры для графиков Chart.js */
 .chart-wrapper-lg {
   position: relative;
-  height: 420px;
+  height: 390px;
   width: 100%;
 }
 
 .chart-wrapper-md {
   position: relative;
-  height: 360px;
+  height: 340px;
   width: 100%;
 }
 
 .chart-wrapper-sm {
   position: relative;
-  height: 300px;
+  height: 270px;
   width: 100%;
 }
 
-/* Поля ввода чисел */
+/* Инпуты */
 input[type="number"] {
   font-variant-numeric: tabular-nums;
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 input[type="number"]:focus,
 select:focus {
   border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
 }
 
-/* Карточки показателей KPI */
-.kpi-card {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+/* Убираем стандартный треугольник у details в Safari/Chrome */
+details > summary::-webkit-details-marker {
+  display: none;
 }
 
-.kpi-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
-}
-
-/* Таблицы данных */
+/* Таблицы */
 .data-table th,
 .data-table td {
   white-space: nowrap;
 }
 
-/* Кастомный скроллбар для списков параметров и таблиц */
+/* Тонкий скроллбар */
 .custom-scroll::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 .custom-scroll::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 3px;
+  background: transparent;
 }
 
 .custom-scroll::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 .custom-scroll::-webkit-scrollbar-thumb:hover {
