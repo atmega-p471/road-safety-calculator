@@ -30,7 +30,7 @@
         </div>
         <div>
           <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">Модель системной динамики ДТС мегаполиса</h1>
-          <p class="text-xs text-slate-500 hidden sm:block">Расчет показателей безопасности дорожного движения и выбор оптимального плана управления</p>
+          <p class="text-xs text-slate-500 hidden sm:block">Интерактивный расчет показателей БДД в реальном времени</p>
         </div>
       </div>
 
@@ -51,84 +51,114 @@
   <!-- Основная сетка -->
   <div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-    <!-- ЛЕВАЯ КОЛОНКА: АККУРАТНАЯ ПАНЕЛЬ УПРАВЛЕНИЯ (АККОРДЕОНЫ) -->
+    <!-- ЛЕВАЯ КОЛОНКА: ИНТЕРАКТИВНЫЕ ПОЛЗУНКИ -->
     <aside class="lg:col-span-4 xl:col-span-3 space-y-3 lg:sticky lg:top-20">
 
-      <!-- Карточка 1: Главные переключатели (Всегда открыта) -->
-      <div class="bg-white rounded-xl border border-slate-200/80 shadow-xs p-4">
-        <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">1. Сценарий и Решатель</div>
+      <!-- Карточка 1: Главные переключатели -->
+      <div class="bg-white rounded-xl border border-slate-200/80 shadow-xs p-4 space-y-3">
+        <div class="text-xs font-bold uppercase tracking-wider text-slate-400">1. Сценарий и Решатель</div>
 
-        <label class="block text-xs font-medium text-slate-600 mb-1.5">Выберите план мероприятий:</label>
-        <div class="grid grid-cols-3 gap-1.5 mb-3 bg-slate-100 p-1 rounded-lg">
-          <button id="planBtn_p1" onclick="selectPlanPreset('p1')" class="plan-btn active-plan py-1.5 px-2 text-xs font-semibold rounded-md transition">План p₁</button>
-          <button id="planBtn_p2" onclick="selectPlanPreset('p2')" class="plan-btn py-1.5 px-2 text-xs font-semibold rounded-md transition">План p₂</button>
-          <button id="planBtn_p3" onclick="selectPlanPreset('p3')" class="plan-btn py-1.5 px-2 text-xs font-semibold rounded-md transition">План p₃</button>
+        <div>
+          <label class="block text-xs font-medium text-slate-600 mb-1.5">Выберите план мероприятий:</label>
+          <div class="grid grid-cols-3 gap-1.5 bg-slate-100 p-1 rounded-lg">
+            <button id="planBtn_p1" onclick="selectPlanPreset('p1')" class="plan-btn active-plan py-1.5 px-2 text-xs font-semibold rounded-md transition">План p₁</button>
+            <button id="planBtn_p2" onclick="selectPlanPreset('p2')" class="plan-btn py-1.5 px-2 text-xs font-semibold rounded-md transition">План p₂</button>
+            <button id="planBtn_p3" onclick="selectPlanPreset('p3')" class="plan-btn py-1.5 px-2 text-xs font-semibold rounded-md transition">План p₃</button>
+          </div>
         </div>
 
-        <label class="block text-xs font-medium text-slate-600 mb-1">Режим расчета:</label>
-        <select id="solverMode" onchange="runAllCalculations()" class="w-full p-2 text-xs border border-slate-200 rounded-lg bg-slate-50 font-medium text-slate-800 mb-3">
-          <option value="rk4">Численный решатель Рунге–Кутты 4 (ОДУ)</option>
-          <option value="article_poly">Эталонные полиномы из статьи (Рис. 8)</option>
-        </select>
+        <div>
+          <label class="block text-xs font-medium text-slate-600 mb-1">Режим расчета:</label>
+          <select id="solverMode" onchange="runAllCalculations()" class="w-full p-2 text-xs border border-slate-200 rounded-lg bg-slate-50 font-medium text-slate-800">
+            <option value="rk4">Численный решатель Рунге–Кутты 4 (ОДУ)</option>
+            <option value="article_poly">Эталонные полиномы из статьи (Рис. 8)</option>
+          </select>
+        </div>
 
-        <div class="grid grid-cols-2 gap-2.5 text-xs">
-          <div>
-            <label class="text-slate-500 block mb-1">Шаг расчета h (лет):</label>
-            <input type="number" id="rkStep" value="0.05" step="0.01" min="0.005" max="0.5" onchange="runAllCalculations()" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg bg-slate-50">
+        <!-- Ползунок горизонта прогноза -->
+        <div class="text-xs space-y-1 pt-1">
+          <div class="flex justify-between">
+            <span class="text-slate-600">Горизонт прогноза $T_{\max}$ (лет):</span>
+            <span id="val_tMax" class="font-bold text-blue-600">4.0</span>
           </div>
-          <div>
-            <label class="text-slate-500 block mb-1">Горизонт прогноза (лет):</label>
-            <input type="number" id="tMax" value="4.0" step="0.5" min="1" max="10" onchange="runAllCalculations()" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg bg-slate-50">
+          <input type="range" id="tMax" min="1.5" max="8.0" step="0.5" value="4.0"
+            oninput="syncPair('tMax', this.value)" class="w-full custom-slider">
+        </div>
+
+        <!-- Ползунок шага RK4 -->
+        <div class="text-xs space-y-1">
+          <div class="flex justify-between">
+            <span class="text-slate-600">Шаг интегрирования $h$ (лет):</span>
+            <span id="val_rkStep" class="font-bold text-blue-600">0.05</span>
+          </div>
+          <input type="range" id="rkStep" min="0.01" max="0.20" step="0.01" value="0.05"
+            oninput="syncPair('rkStep', this.value)" class="w-full custom-slider">
+        </div>
+      </div>
+
+      <!-- Карточка 2: Целевая функция и границы (Ползунки) -->
+      <div class="bg-white rounded-xl border border-slate-200/80 shadow-xs p-4 space-y-3">
+        <div class="text-xs font-bold uppercase tracking-wider text-slate-400">2. Цели и Границы допуска</div>
+
+        <!-- Целевой уровень X* -->
+        <div class="text-xs space-y-1">
+          <div class="flex justify-between">
+            <span class="text-slate-600">Рекомендованная цель $X^*$:</span>
+            <span id="val_xStar" class="font-bold text-emerald-600">0.50</span>
+          </div>
+          <input type="range" id="xStar" min="0.10" max="0.90" step="0.02" value="0.50"
+            oninput="syncPair('xStar', this.value)" class="w-full custom-slider emerald-slider">
+        </div>
+
+        <!-- Интервал интегрирования t_N -->
+        <div class="text-xs space-y-1">
+          <div class="flex justify-between">
+            <span class="text-slate-600">Интервал оценки $t_N$ (лет):</span>
+            <span id="val_intTN" class="font-bold text-blue-600">1.17</span>
+          </div>
+          <input type="range" id="intTN" min="0.50" max="4.00" step="0.05" value="1.1667"
+            oninput="syncPair('intTN', this.value)" class="w-full custom-slider">
+          <input type="hidden" id="intT0" value="0.0">
+        </div>
+
+        <!-- Мин. и Макс. допуск -->
+        <div class="grid grid-cols-2 gap-3 pt-1 text-xs">
+          <div class="space-y-1">
+            <div class="flex justify-between">
+              <span class="text-rose-600 font-medium">$X_{\min}$:</span>
+              <span id="val_xMinBound" class="font-bold text-rose-700">0.25</span>
+            </div>
+            <input type="range" id="xMinBound" min="0.05" max="0.60" step="0.05" value="0.25"
+              oninput="syncPair('xMinBound', this.value)" class="w-full custom-slider rose-slider">
+          </div>
+          <div class="space-y-1">
+            <div class="flex justify-between">
+              <span class="text-rose-600 font-medium">$X_{\max}$:</span>
+              <span id="val_xMaxBound" class="font-bold text-rose-700">1.00</span>
+            </div>
+            <input type="range" id="xMaxBound" min="0.70" max="1.25" step="0.05" value="1.00"
+              oninput="syncPair('xMaxBound', this.value)" class="w-full custom-slider rose-slider">
           </div>
         </div>
       </div>
 
-      <!-- Карточка 2: Целевая функция и границы (Всегда открыта) -->
-      <div class="bg-white rounded-xl border border-slate-200/80 shadow-xs p-4">
-        <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">2. Цели и Границы допуска</div>
-        <div class="grid grid-cols-2 gap-2.5 text-xs">
-          <div>
-            <label class="text-slate-600 block mb-1">Начало t₀ (лет):</label>
-            <input type="number" id="intT0" value="0.0" step="0.1" onchange="runAllCalculations()" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg bg-slate-50">
-          </div>
-          <div>
-            <label class="text-slate-600 block mb-1">Конец t_N (14 мес):</label>
-            <input type="number" id="intTN" value="1.1667" step="0.05" onchange="runAllCalculations()" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg bg-slate-50">
-          </div>
-          <div>
-            <label class="text-slate-600 block mb-1">Цель X* (идеал):</label>
-            <input type="number" id="xStar" value="0.50" step="0.05" onchange="runAllCalculations()" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg bg-slate-50">
-          </div>
-          <div>
-            <label class="text-slate-600 block mb-1">Вес показателей γᵢ:</label>
-            <input type="text" value="1/15 (равные)" disabled class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg bg-slate-100 text-slate-400">
-          </div>
-          <div>
-            <label class="text-rose-600 font-medium block mb-1">Мин. граница X_min:</label>
-            <input type="number" id="xMinBound" value="0.25" step="0.05" onchange="runAllCalculations()" class="w-full px-2.5 py-1.5 border border-rose-200 rounded-lg bg-rose-50/50 text-rose-900 font-medium">
-          </div>
-          <div>
-            <label class="text-rose-600 font-medium block mb-1">Макс. граница X_max:</label>
-            <input type="number" id="xMaxBound" value="1.00" step="0.05" onchange="runAllCalculations()" class="w-full px-2.5 py-1.5 border border-rose-200 rounded-lg bg-rose-50/50 text-rose-900 font-medium">
-          </div>
-        </div>
-      </div>
-
-      <!-- Карточка 3: Сворачиваемый блок Начальных условий X1..X13 -->
-      <details class="bg-white rounded-xl border border-slate-200/80 shadow-xs group">
+      <!-- Карточка 3: Ползунки Начальных условий X1..X13 (Открыта по умолчанию) -->
+      <details class="bg-white rounded-xl border border-slate-200/80 shadow-xs group" open>
         <summary class="p-4 flex items-center justify-between cursor-pointer select-none list-none">
           <div>
             <div class="text-xs font-bold uppercase tracking-wider text-slate-500">3. Начальные значения X₁…X₁₃</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">Стартовый уровень аварийности (Табл. 4)</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Двигайте ползунки — график меняется сразу</div>
           </div>
           <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
         </summary>
-        <div class="px-4 pb-4 pt-1 border-t border-slate-100">
-          <div id="initCondContainer" class="space-y-1.5 max-h-60 overflow-y-auto pr-1 custom-scroll text-xs"></div>
+        <div class="px-4 pb-4 pt-2 border-t border-slate-100">
+          <div id="initCondContainer" class="space-y-2.5 max-h-64 overflow-y-auto pr-1.5 custom-scroll text-xs">
+            <!-- Генерируется в script.js -->
+          </div>
         </div>
       </details>
 
-      <!-- Карточка 4: Сворачиваемый блок Внешних факторов E1..E6 -->
+      <!-- Карточка 4: Ползунки Внешних факторов E1..E6 -->
       <details class="bg-white rounded-xl border border-slate-200/80 shadow-xs group">
         <summary class="p-4 flex items-center justify-between cursor-pointer select-none list-none">
           <div>
@@ -137,11 +167,17 @@
           </div>
           <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
         </summary>
-        <div class="px-4 pb-4 pt-1 border-t border-slate-100">
-          <div id="disturbancesContainer" class="space-y-2 max-h-60 overflow-y-auto pr-1 custom-scroll text-xs"></div>
-          <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-            <label class="text-slate-600">Масштаб скорости 1/X_norm:</label>
-            <input type="number" id="normScale" value="0.012" step="0.002" onchange="runAllCalculations()" class="w-20 px-2 py-1 border rounded bg-slate-50 text-right">
+        <div class="px-4 pb-4 pt-2 border-t border-slate-100 space-y-3">
+          <div id="disturbancesContainer" class="space-y-3 max-h-64 overflow-y-auto pr-1.5 custom-scroll text-xs">
+            <!-- Генерируется в script.js -->
+          </div>
+          <div class="pt-2 border-t border-slate-100 text-xs space-y-1">
+            <div class="flex justify-between">
+              <span class="text-slate-600 font-medium">Масштаб скорости $1/X_i^{norm}$:</span>
+              <span id="val_normScale" class="font-bold text-blue-600">0.012</span>
+            </div>
+            <input type="range" id="normScale" min="0.002" max="0.040" step="0.002" value="0.012"
+              oninput="syncPair('normScale', this.value)" class="w-full custom-slider">
           </div>
         </div>
       </details>
@@ -151,7 +187,7 @@
     <!-- ПРАВАЯ КОЛОНКА: KPI И ГРАФИКИ -->
     <main class="lg:col-span-8 xl:col-span-9 space-y-5">
 
-      <!-- Компактная строка KPI (4 карточки) -->
+      <!-- Строка KPI -->
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5">
         <div class="bg-white p-4 rounded-xl border border-slate-200/80 kpi-card">
           <div class="text-xs text-slate-500">Интеграл отклонений Z(p)</div>
@@ -181,7 +217,7 @@
       <!-- Главный контейнер с вкладками -->
       <div class="bg-white rounded-xl border border-slate-200/80 overflow-hidden">
 
-        <!-- Однострочная минималистичная навигация по вкладкам -->
+        <!-- Вкладки -->
         <div class="border-b border-slate-200 bg-slate-50/70 px-3 pt-2 flex items-center gap-1 overflow-x-auto custom-scroll">
           <button onclick="switchTab('tab_dynamics')" id="btn_tab_dynamics" class="tab-btn active px-3.5 py-2.5 text-xs font-medium rounded-t-lg whitespace-nowrap transition">
             📈 1. Прогноз X₁…X₁₃
@@ -210,7 +246,7 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <h3 class="text-sm sm:text-base font-bold text-slate-900">Динамика показателей безопасности дорожного движения $X_1(t) \dots X_{13}(t)$ (Рис. 8)</h3>
-                <p class="text-xs text-slate-500 mt-0.5">Показывает, как снижается аварийность во времени при выбранном плане мероприятий.</p>
+                <p class="text-xs text-slate-500 mt-0.5">Перемещайте ползунки слева — кривые перестраиваются в реальном времени.</p>
               </div>
               <div class="flex gap-1.5 shrink-0">
                 <button onclick="toggleAllSeries(true)" class="px-2.5 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition">Показать все 13</button>
@@ -222,7 +258,7 @@
               <canvas id="dynamicsChart"></canvas>
             </div>
 
-            <!-- Сворачиваемая таблица полиномов, чтобы не загромождать экран -->
+            <!-- Сворачиваемая таблица полиномов -->
             <details class="bg-slate-50 rounded-xl border border-slate-200/80" open>
               <summary class="px-4 py-3 text-xs font-bold uppercase tracking-wider text-slate-600 cursor-pointer select-none flex justify-between items-center">
                 <span>Таблица расчетных полиномов Xᵢ(t) = a·t² + b·t + c и вклада в целевую функцию</span>
@@ -248,32 +284,40 @@
 
           <!-- ВКЛАДКА 2: РАДАРНЫЕ ДИАГРАММЫ -->
           <div id="tab_radar" class="tab-content hidden space-y-5">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
               <div>
                 <h3 class="text-sm sm:text-base font-bold text-slate-900">Контроль нахождения показателей в допустимых границах (Рис. 11–12)</h3>
-                <p class="text-xs text-slate-500 mt-0.5">Синий контур должен оставаться внутри красных пунктирных колец $[X_{\min}; X_{\max}]$. Переключитесь слева на <b>План p₂</b>, чтобы увидеть выход показателя $X_7$ за границы.</p>
+                <p class="text-xs text-slate-500 mt-0.5">Двигайте ползунки срезов времени $t_1$ и $t_2$, чтобы увидеть трансформацию лепестковой диаграммы.</p>
               </div>
-              <div class="flex items-center gap-3 text-xs shrink-0 bg-slate-50 p-2 rounded-lg border border-slate-200">
-                <div>
-                  <label class="text-slate-500 mr-1">Срез t₁ (лет):</label>
-                  <input type="number" id="radarT1" value="1.0" step="0.25" min="0" max="10" onchange="updateRadarCharts()" class="w-16 p-1 border rounded bg-white text-center font-semibold">
+              <div class="flex flex-wrap items-center gap-4 text-xs bg-slate-50 p-3 rounded-xl border border-slate-200 shrink-0">
+                <div class="w-40">
+                  <div class="flex justify-between mb-1">
+                    <span class="text-slate-600">Срез $t_1$ (лет):</span>
+                    <span id="val_radarT1" class="font-bold text-blue-600">1.00</span>
+                  </div>
+                  <input type="range" id="radarT1" min="0.0" max="4.0" step="0.1" value="1.0"
+                    oninput="document.getElementById('val_radarT1').textContent=parseFloat(this.value).toFixed(2); updateRadarCharts();" class="w-full custom-slider">
                 </div>
-                <div>
-                  <label class="text-slate-500 mr-1">Срез t₂ (лет):</label>
-                  <input type="number" id="radarT2" value="2.0" step="0.25" min="0" max="10" onchange="updateRadarCharts()" class="w-16 p-1 border rounded bg-white text-center font-semibold">
+                <div class="w-40">
+                  <div class="flex justify-between mb-1">
+                    <span class="text-slate-600">Срез $t_2$ (лет):</span>
+                    <span id="val_radarT2" class="font-bold text-blue-600">2.00</span>
+                  </div>
+                  <input type="range" id="radarT2" min="0.0" max="4.0" step="0.1" value="2.0"
+                    oninput="document.getElementById('val_radarT2').textContent=parseFloat(this.value).toFixed(2); updateRadarCharts();" class="w-full custom-slider">
                 </div>
               </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div class="bg-slate-50/60 p-4 rounded-xl border border-slate-200/80">
-                <h4 id="radarTitle1" class="text-xs font-bold uppercase tracking-wider text-center text-slate-600 mb-2">Срез t₁ = 1.0 г.</h4>
+                <h4 id="radarTitle1" class="text-xs font-bold uppercase tracking-wider text-center text-slate-600 mb-2">Срез t₁ = 1.00 г.</h4>
                 <div class="chart-wrapper-md">
                   <canvas id="radarChart1"></canvas>
                 </div>
               </div>
               <div class="bg-slate-50/60 p-4 rounded-xl border border-slate-200/80">
-                <h4 id="radarTitle2" class="text-xs font-bold uppercase tracking-wider text-center text-slate-600 mb-2">Срез t₂ = 2.0 г.</h4>
+                <h4 id="radarTitle2" class="text-xs font-bold uppercase tracking-wider text-center text-slate-600 mb-2">Срез t₂ = 2.00 г.</h4>
                 <div class="chart-wrapper-md">
                   <canvas id="radarChart2"></canvas>
                 </div>
@@ -315,11 +359,15 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
               <div>
                 <h3 class="text-sm sm:text-base font-bold text-slate-900">Сравнение со статистикой МВД и автокоррекция модели (Рис. 9–10)</h3>
-                <p class="text-xs text-slate-500 mt-0.5">Если прогноз модели отклоняется от реальной статистики сильнее порога (по умолчанию 10%), модель корректируется.</p>
+                <p class="text-xs text-slate-500 mt-0.5">Двигайте ползунок порога погрешности — серая линия коррекции перестраивается мгновенно.</p>
               </div>
-              <div class="flex items-center gap-2 text-xs bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 shrink-0">
-                <label class="font-medium text-slate-600">Допустимая погрешность (%):</label>
-                <input type="number" id="corrThreshold" value="10" min="1" max="30" step="1" onchange="updateCorrectionCharts()" class="w-14 p-1 border rounded bg-white text-center font-bold text-blue-600">
+              <div class="w-56 text-xs bg-slate-50 px-3 py-2 rounded-xl border border-slate-200 shrink-0">
+                <div class="flex justify-between mb-1">
+                  <span class="font-medium text-slate-600">Порог коррекции:</span>
+                  <span class="font-bold text-blue-600"><span id="val_corrThreshold">10</span>%</span>
+                </div>
+                <input type="range" id="corrThreshold" value="10" min="2" max="25" step="1"
+                  oninput="document.getElementById('val_corrThreshold').textContent=this.value; updateCorrectionCharts();" class="w-full custom-slider">
               </div>
             </div>
 
@@ -417,24 +465,12 @@
         <p><b>О чем этот проект?</b> Калькулятор моделирует безопасность дорожного движения (БДД) мегаполиса на основе 13 показателей аварийности (<b>X₁…X₁₃</b>: число ДТП, погибших, раненых, пьяное вождение, плохие дороги и т.д.) и 6 внешних факторов (<b>E₁…E₆</b>: камеры, штрафы, старение автопарка и др.). Все показатели переведены в безразмерную шкалу от <b>0 до 1</b>.</p>
 
         <div class="p-3 bg-blue-50 rounded-xl border border-blue-100 space-y-1.5">
-          <div class="font-bold text-blue-950">Куда нажимать и что менять слева:</div>
+          <div class="font-bold text-blue-950">Интерактивные ползунки слева (реагируют мгновенно):</div>
           <ul class="list-disc list-inside space-y-1 text-blue-900">
             <li><b>1. Сценарий (План p₁, p₂, p₃):</b> Переключайте кнопки планов. <b>План p₁</b> — оптимальный; <b>План p₂</b> — приводит к выходу показателя X₇ за допустимые границы на 2-й год; <b>План p₃</b> — допустимый, но менее эффективный.</li>
-            <li><b>Режим расчета:</b> «Численный решатель Рунге–Кутты 4» в реальном времени решает систему дифференциальных уравнений (9). «Эталонные полиномы» воспроизводят готовые формулы из текста статьи (Z = 1.6031).</li>
-            <li><b>2. Цели и Границы:</b> <b>Цель X* (0.50)</b> — желаемый уровень снижения аварийности. <b>X_min (0.25) и X_max (1.00)</b> — коридор допустимых значений.</li>
-            <li><b>3. Начальные значения X₁…X₁₃ (кликните, чтобы раскрыть):</b> Стартовая аварийность в начальный момент времени.</li>
-            <li><b>4. Внешние факторы E₁…E₆ (кликните, чтобы раскрыть):</b> Коэффициенты роста камер (E₃), штрафов (E₆), дорог (E₅) и износа машин (E₂). Увеличьте камеры или штрафы — и кривые ДТП на графике пойдут вниз быстрее!</li>
-          </ul>
-        </div>
-
-        <div class="space-y-1">
-          <div class="font-bold text-slate-900">Что показывают вкладки справа:</div>
-          <ul class="list-disc list-inside space-y-1 text-slate-600">
-            <li><b>Вкладка 1 (Прогноз):</b> Кривые изменения всех 13 показателей по годам и готовые уравнения под графиком.</li>
-            <li><b>Вкладка 2 (Допуски / Радар):</b> Круговые диаграммы. Если синий контур пробивает красный пунктир — план отбраковывается.</li>
-            <li><b>Вкладка 3 (Зависимости):</b> Как один показатель влияет на другой (по статистике ГИБДД).</li>
-            <li><b>Вкладка 4 (Статистика и Коррекция):</b> Автоматическая подстройка модели, если её ошибка превышает 10%.</li>
-            <li><b>Вкладка 5 (Выбор плана):</b> Итоговое сравнение планов и список конкретных мероприятий для города.</li>
+            <li><b>2. Цели и Границы:</b> Ползунками меняйте желаемый целевой уровень <b>X* (0.50)</b> и коридор безопасности <b>[X_min; X_max]</b> — красные кольца на Радаре (вкладка 2) будут сжиматься и разжиматься прямо на глазах.</li>
+            <li><b>3. Начальные значения X₁…X₁₃:</b> Тяните любой ползунок влево/вправо, чтобы изменить стартовую аварийность — кривые на графике перестроятся в ту же миллисекунду.</li>
+            <li><b>4. Внешние факторы E₁…E₆:</b> Ползунками регулируйте темп роста камер (E₃), штрафов (E₆), дорог (E₅) и износа машин (E₂).</li>
           </ul>
         </div>
       </div>
