@@ -1,5 +1,5 @@
 // ============================================================================
-// 1. СПРАВОЧНИКИ ПОКАЗАТЕЛЕЙ (ТАБЛИЦА 1) И ВОЗМУЩЕНИЙ (ТАБЛИЦА 2)
+// 1. СПРАВОЧНИКИ ПОКАЗАТЕЛЕЙ (ТАБЛИЦА 1) И ВОЗМУЩЕНИЙ (ТАБЛИЦА 2)[cite: 1]
 // ============================================================================
 const X_VARS = [
   { id: 1, code: 'X1', name: 'Общее количество ДТП в РФ (в год)', init: 0.89, color: '#2563eb' },
@@ -17,7 +17,7 @@ const X_VARS = [
   { id: 13, code: 'X13', name: 'Количество ДТП с тяжкими последствиями', init: 0.62, color: '#e11d48' }
 ];
 
-// Эталонные полиномы из статьи (под Рисунком 8)
+// Эталонные полиномы из статьи (под Рисунком 8)[cite: 1]
 const ARTICLE_POLYS = [
   { a: -0.0007, b: -0.0728, c: 0.7135 },
   { a: -0.0035, b: -0.0638, c: 1.0128 },
@@ -48,7 +48,7 @@ let lastSimulation = null;
 let charts = {};
 
 // ============================================================================
-// 2. СИСТЕМА НЕЛИНЕЙНЫХ ДИФФЕРЕНЦИАЛЬНЫХ УРАВНЕНИЙ (9)
+// 2. СИСТЕМА НЕЛИНЕЙНЫХ ДИФФЕРЕНЦИАЛЬНЫХ УРАВНЕНИЙ (6), (9)[cite: 1]
 // ============================================================================
 function P2(c0, c1, c2, x) {
   return c0 + c1 * x + c2 * x * x;
@@ -149,7 +149,7 @@ function computeDerivatives(t, X, params) {
 }
 
 // ============================================================================
-// 3. РУНГЕ-КУТТА 4 И АППРОКСИМАЦИЯ
+// 3. РУНГЕ-КУТТА 4 И АППРОКСИМАЦИЯ[cite: 1]
 // ============================================================================
 function solveSystem(params) {
   const h = params.rkStep;
@@ -258,15 +258,23 @@ function calculateObjectiveZ(fittedPolys, t0, tN, xStar, mode, plan) {
 }
 
 // ============================================================================
-// 4. СВЯЗКА ИНТЕРФЕЙСА И ДИНАМИЧЕСКИЕ СЛАЙДЕРЫ
+// 4. СВЯЗКА ИНТЕРФЕЙСА И ТЕМНАЯ ТЕМА
 // ============================================================================
+function toggleDarkMode() {
+  const body = document.body;
+  body.classList.toggle('dark-theme');
+  const isDark = body.classList.contains('dark-theme');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+  document.getElementById('themeText').textContent = isDark ? 'Светлая' : 'Тема';
+}
+
 function buildDynamicUI() {
-  // Начальные условия X1..X13
   const icContainer = document.getElementById('initCondContainer');
   icContainer.innerHTML = X_VARS.map((v) => `
     <div class="space-y-1">
       <div class="flex justify-between items-center text-[11px]">
-        <span class="font-medium text-slate-700 truncate" title="${v.name}">
+        <span class="font-medium text-slate-700 calc-label truncate" title="${v.name}">
           <span class="inline-block w-2 h-2 rounded-full mr-1" style="background:${v.color}"></span>
           <b>${v.code}</b> (${v.name.slice(0, 22)}..)
         </span>
@@ -277,24 +285,23 @@ function buildDynamicUI() {
     </div>
   `).join('');
 
-  // Внешние факторы E1..E6
   const distContainer = document.getElementById('disturbancesContainer');
   distContainer.innerHTML = E_FACTORS.map((e) => `
-    <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200/80 space-y-2">
-      <div class="font-bold text-slate-700 text-[11px]">${e.code}: ${e.name}</div>
+    <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200/80 inner-box space-y-2">
+      <div class="font-bold text-slate-700 inner-title text-[11px]">${e.code}: ${e.name}</div>
       <div class="grid grid-cols-2 gap-3">
         <div class="space-y-1">
-          <div class="flex justify-between text-[10px] text-slate-500">
+          <div class="flex justify-between text-[10px] text-slate-500 calc-label">
             <span>Скорость k:</span>
-            <span id="val_E_k_${e.id}" class="font-bold text-slate-700">${e.k}</span>
+            <span id="val_E_k_${e.id}" class="font-bold text-slate-700 inner-title">${e.k}</span>
           </div>
           <input type="range" id="E_k_${e.id}" min="0.00" max="0.80" step="0.02" value="${e.k}"
             oninput="syncPair('E_k_${e.id}', this.value)" class="w-full custom-slider">
         </div>
         <div class="space-y-1">
-          <div class="flex justify-between text-[10px] text-slate-500">
+          <div class="flex justify-between text-[10px] text-slate-500 calc-label">
             <span>База b:</span>
-            <span id="val_E_b_${e.id}" class="font-bold text-slate-700">${e.b}</span>
+            <span id="val_E_b_${e.id}" class="font-bold text-slate-700 inner-title">${e.b}</span>
           </div>
           <input type="range" id="E_b_${e.id}" min="0.00" max="2.50" step="0.05" value="${e.b}"
             oninput="syncPair('E_b_${e.id}', this.value)" class="w-full custom-slider">
@@ -307,12 +314,11 @@ function buildDynamicUI() {
   buildPlanTreeUI();
 }
 
-// Мгновенная синхронизация ползунка со спаном числа и вызов расчета
 function syncPair(id, val) {
   const numVal = parseFloat(val);
   const span = document.getElementById(`val_${id}`);
   if (span) {
-    span.textContent = numVal.toFixed(id.startsWith('init') || id.includes('Bound') || id === 'xStar' || id === 'intTN' || id === 'tMax' || id === 'rkStep' ? 2 : 2);
+    span.textContent = numVal.toFixed(2);
   }
   runAllCalculations();
 }
@@ -350,7 +356,6 @@ function selectPlanPreset(planId) {
   runAllCalculations();
 }
 
-// Главная функция пересчета и обновления графиков в реальном времени
 function runAllCalculations() {
   const params = readParamsFromUI();
   const sim = solveSystem(params);
@@ -370,7 +375,6 @@ function runAllCalculations() {
     }
   }
 
-  // Обновление KPI
   document.getElementById('kpiZActive').textContent = obj.Z.toFixed(4);
   const statusEl = document.getElementById('kpiBoundsStatus');
   const detailEl = document.getElementById('kpiBoundsDetail');
@@ -396,7 +400,7 @@ function runAllCalculations() {
 }
 
 // ============================================================================
-// 5. ОТРИСОВКА И ОБНОВЛЕНИЕ ГРАФИКОВ БЕЗ МЕРЦАНИЯ (.update('none'))
+// 5. ОТРИСОВКА И ОБНОВЛЕНИЕ ГРАФИКОВ БЕЗ МЕРЦАНИЯ
 // ============================================================================
 function updateDynamicsChartAndTable() {
   const { params, sim, obj } = lastSimulation;
@@ -419,11 +423,11 @@ function updateDynamicsChartAndTable() {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: false, // Мгновенный рендер без задержек
+        animation: false,
         interaction: { mode: 'index', intersect: false },
         plugins: {
           legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
-          title: { display: true, text: 'Динамика показателей безопасности ДТС X₁(t)...X₁₃(t) (Рисунок 8)' }
+          title: { display: true, text: 'Динамика показателей безопасности ДТС X₁(t)...X₁₃(t) (Рисунок 8)[cite: 1]' }
         },
         scales: {
           x: { title: { display: true, text: 'Время t (годы)' } },
@@ -436,10 +440,9 @@ function updateDynamicsChartAndTable() {
     charts.dynamics.data.datasets.forEach((ds, i) => {
       ds.data = sim.series[i];
     });
-    charts.dynamics.update('none'); // Обновление в реальном времени
+    charts.dynamics.update('none');
   }
 
-  // Таблица полиномов
   const tbody = document.getElementById('polyTableBody');
   const idxTN = Math.min(sim.tArr.length - 1, Math.round(params.intTN / params.rkStep));
   tbody.innerHTML = X_VARS.map((v, i) => {
@@ -467,7 +470,6 @@ function toggleAllSeries(showAll) {
   charts.dynamics.update('none');
 }
 
-// Радарные диаграммы
 function updateRadarCharts() {
   if (!lastSimulation) return;
   const { params, sim } = lastSimulation;
@@ -495,13 +497,7 @@ function renderSingleRadar(canvasId, chartKey, tVal, params, sim) {
       data: {
         labels: X_VARS.map(v => v.code),
         datasets: [
-          {
-            label: 'Значения Xᵢ(t)',
-            data: values,
-            borderColor: '#2563eb',
-            backgroundColor: 'rgba(37, 99, 235, 0.2)',
-            borderWidth: 2.5
-          },
+          { label: 'Значения Xᵢ(t)', data: values, borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.2)', borderWidth: 2.5 },
           { label: 'X_max', data: maxBounds, borderColor: '#dc2626', borderDash: [5, 5], borderWidth: 1.5, fill: false, pointRadius: 0 },
           { label: 'X_min', data: minBounds, borderColor: '#dc2626', borderDash: [4, 4], borderWidth: 1.5, fill: false, pointRadius: 0 },
           { label: 'X*', data: recBounds, borderColor: '#059669', borderDash: [2, 2], borderWidth: 1, fill: false, pointRadius: 0 }
@@ -524,7 +520,6 @@ function renderSingleRadar(canvasId, chartKey, tVal, params, sim) {
   }
 }
 
-// Регрессии f(X)
 const REGRESSION_DEFS = {
   f1_7: { eq: 'f_{1,7}(X_7) = 6.7 X_7^2 - 11.34 X_7 + 5.66', c: [5.66, -11.34, 6.7], xLabel: 'X₇ (Нарушения ПДД водителями)', yLabel: 'X₁ (Общие ДТП)' },
   f1_8: { eq: 'f_{1,8}(X_8) = -1.508 X_8^2 + 2.448 X_8 - 0.04126', c: [-0.04126, 2.448, -1.508], xLabel: 'X₈ (Нетрезвые водители)', yLabel: 'X₁ (Общие ДТП)' },
@@ -564,7 +559,7 @@ function updateRegressionChart() {
         labels: xVals,
         datasets: [
           { label: 'Апроксимация (полином 2 ст.)', data: yModel, borderColor: '#ea580c', borderWidth: 3, tension: 0.35 },
-          { label: 'Статистика ГИБДД', data: yStat, borderColor: '#2563eb', borderWidth: 2, borderDash: [4, 2], tension: 0.15 }
+          { label: 'Статистика ГИБДД[cite: 1]', data: yStat, borderColor: '#2563eb', borderWidth: 2, borderDash: [4, 2], tension: 0.15 }
         ]
       },
       options: { responsive: true, maintainAspectRatio: false, animation: false }
@@ -577,7 +572,6 @@ function updateRegressionChart() {
   }
 }
 
-// Коррекция 10%
 function updateCorrectionCharts() {
   const thresholdPct = parseFloat(document.getElementById('corrThreshold').value) || 10;
   const threshold = thresholdPct / 100;
@@ -621,7 +615,6 @@ function updateCorrectionCharts() {
     charts.corr10.update('none');
   }
 
-  // Рис. 9
   const years9 = ['2015', '2016', '2017', '2018', '2019', '2020', '2021'];
   const statX8 = [1.00, 0.84, 0.81, 0.76, 0.72, 0.68, 0.63];
   const calcX8 = [1.00, 0.922, 0.85, 0.79, 0.73, 0.67, 0.61];
@@ -648,7 +641,6 @@ function updateCorrectionCharts() {
   }
 }
 
-// Сравнение планов
 function updatePlansComparison() {
   const p1Params = readParamsFromUI('p1');
   const p2Params = readParamsFromUI('p2');
@@ -682,7 +674,6 @@ function updatePlansComparison() {
   }
 }
 
-// Дерево мероприятий и матрица инцидентности
 function buildPlanTreeUI() {
   const groups = [
     { code: 'm₁⁰', title: 'Изменение поведения участников ДД', items: ['m₁¹ — Программы для населения', 'm₂¹ — Информ. работа', 'm₃¹ — Имидж ГИБДД', 'm₄¹ — Вовлечение бизнеса и НКО', 'm₅¹ — Автоматический контроль (камеры)', 'm₆¹ — Безопасность перевозок'] },
@@ -694,9 +685,9 @@ function buildPlanTreeUI() {
   ];
 
   document.getElementById('planTreeContainer').innerHTML = groups.map(g => `
-    <div class="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
-      <div class="font-bold text-blue-800 border-b pb-1.5 mb-2">${g.code}: ${g.title}</div>
-      <ul class="space-y-1 text-slate-600 list-disc list-inside text-[11px]">
+    <div class="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs inner-box">
+      <div class="font-bold text-blue-800 border-b pb-1.5 mb-2 calc-border">${g.code}: ${g.title}</div>
+      <ul class="space-y-1 text-slate-600 list-disc list-inside text-[11px] inner-title">
         ${g.items.map(it => `<li>${it}</li>`).join('')}
       </ul>
     </div>
@@ -781,6 +772,11 @@ function exportCSV() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-theme');
+    document.getElementById('themeText').textContent = 'Светлая';
+  }
   buildDynamicUI();
   runAllCalculations();
 });
