@@ -7,7 +7,7 @@ body {
   padding: 0;
 }
 
-/* ВАЖНО: Запрещаем инлайн-формулам MathJax ломать строки в подписях */
+/* Запрещаем инлайн-формулам MathJax ломать строки в подписях */
 mjx-container[jax="SVG"][display="false"] {
   display: inline-block !important;
   margin: 0 2px !important;
@@ -34,7 +34,7 @@ mjx-container[jax="SVG"][display="false"] {
   background-color: #ffffff;
 }
 
-/* Переключатель планов p1, p2, p3 (Segmented control) */
+/* Переключатель планов p1, p2, p3 */
 .plan-btn {
   color: #475569;
   background: transparent;
@@ -71,7 +71,57 @@ mjx-container[jax="SVG"][display="false"] {
   width: 100%;
 }
 
-/* Инпуты */
+/* Стилизация ползунков (Range Sliders) */
+.custom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+  accent-color: #2563eb;
+}
+
+.custom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #2563eb;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.3);
+  cursor: grab;
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+.custom-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.custom-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.2);
+}
+
+/* Цветовые вариации ползунков */
+.emerald-slider {
+  accent-color: #059669;
+}
+.emerald-slider::-webkit-slider-thumb {
+  background: #059669;
+}
+
+.rose-slider {
+  accent-color: #e11d48;
+  background: #ffe4e6;
+}
+.rose-slider::-webkit-slider-thumb {
+  background: #e11d48;
+}
+
+/* Поля ввода чисел */
 input[type="number"] {
   font-variant-numeric: tabular-nums;
   outline: none;
