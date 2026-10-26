@@ -1,4 +1,4 @@
-/* Чистый современный фон и типографика */
+/* Базовый светлый стиль */
 body {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: #f8fafc;
@@ -105,7 +105,6 @@ mjx-container[jax="SVG"][display="false"] {
   transform: scale(1.2);
 }
 
-/* Цветовые вариации ползунков */
 .emerald-slider {
   accent-color: #059669;
 }
@@ -135,32 +134,150 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
 }
 
-/* Убираем стандартный треугольник у details в Safari/Chrome */
 details > summary::-webkit-details-marker {
   display: none;
 }
 
-/* Таблицы */
 .data-table th,
 .data-table td {
   white-space: nowrap;
 }
 
-/* Тонкий скроллбар */
+/* Скроллбар */
 .custom-scroll::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
-
 .custom-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .custom-scroll::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
 }
-
 .custom-scroll::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+
+/* ==========================================================================
+   ТЕМНАЯ ТЕМА (.dark-theme)
+   ========================================================================== */
+body.dark-theme {
+  background-color: #0f172a;
+  color: #f1f5f9;
+}
+
+body.dark-theme header#mainHeader {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme #headerTitle {
+  color: #f8fafc !important;
+}
+
+body.dark-theme .calc-card {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .calc-border {
+  border-color: #334155 !important;
+}
+
+body.dark-theme .calc-label {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .calc-input {
+  background-color: #0f172a !important;
+  border-color: #475569 !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .plan-container {
+  background-color: #0f172a !important;
+}
+
+body.dark-theme .plan-btn {
+  color: #94a3b8;
+}
+
+body.dark-theme .plan-btn.active-plan {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .kpi-card {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .kpi-text {
+  color: #f8fafc !important;
+}
+
+body.dark-theme .tabs-header {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .tab-btn {
+  color: #94a3b8;
+}
+
+body.dark-theme .tab-btn:hover {
+  color: #ffffff;
+  background-color: #334155;
+}
+
+body.dark-theme .tab-btn.active {
+  background-color: #0f172a !important;
+  color: #60a5fa !important;
+  border-bottom-color: #60a5fa !important;
+}
+
+body.dark-theme .tab-title {
+  color: #f8fafc !important;
+}
+
+body.dark-theme .btn-secondary {
+  background-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .btn-secondary:hover {
+  background-color: #475569 !important;
+}
+
+body.dark-theme .inner-box {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-theme .inner-title {
+  color: #f1f5f9 !important;
+}
+
+body.dark-theme .log-box {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-theme .plan-card-1 {
+  background-color: rgba(6, 78, 59, 0.3) !important;
+  border-color: #047857 !important;
+}
+body.dark-theme .plan-card-2 {
+  background-color: rgba(136, 19, 55, 0.3) !important;
+  border-color: #be123c !important;
+}
+body.dark-theme .plan-card-3 {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
 }
